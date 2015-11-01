@@ -1,0 +1,30 @@
+# Rename this file to config.properties
+#
+# your fb user access token you got from developer.facebook.com
+#
+accessToken=
+#
+# the data collection directory where you want to download the facebook data
+# example:
+# collDir=/home/yatish/datac/coll
+#
+collDir=
+#
+# comma seperated fb pages list. currently, don't try to collect data for more than 5 pages in one run
+# example:
+# fbPages=jebbush,DonaldTrump,HillaryClinton
+# here is a list of 30 fb pages
+# fbPages=IHeardMyCountryCalling,HillaryClinton,joebiden,MartinOMalley,berniesanders,chafee2016,tedcruz,governorscottwalker,JimWebb2016,Hillary2016,omalleyforpresident2016,MarcoRubio,jebbush,tedcruzpage,govchristie,scottkwalker,JohnKasich,mikehuckabee,bobbyjindal,GovernorPerry,randpaul,realbencarson,CarlyFiorina,GovGeorgePataki,LindseyGrahamSC,RickSantorum,DonaldTrump,gilmoreforamerica,MarkForAmerica
+# fbPages=jebbush,DonaldTrump,HillaryClinton
+#
+fbPages=
+#
+# collect posts up to this date (including the date). Format YYYY-MM-DDThh:mm:ss
+since=
+until=
+#
+dbUrl=
+dbUser=
+dbPass=
+# whether or not collect comments for posts
+collectComments=on
