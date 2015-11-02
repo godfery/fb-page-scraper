@@ -31,7 +31,10 @@ public class PageCollector
         if(null != pageJson)
         {
             Page page = new Page(pageJson);
-            page.writeJson();
+            if(Config.collectJson)
+            {
+                page.writeJson();
+            }
             page.updateDb();
         }
         else

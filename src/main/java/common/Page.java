@@ -1,5 +1,6 @@
 package common;
 
+import cmdline.FbCollector;
 import db.DbManager;
 import org.json.simple.JSONObject;
 
@@ -69,14 +70,14 @@ public class Page
     {
         if(pageExists())
         {
-            /*if(stats)
+            if((FbCollector.pageUpdateCount % 100) == 0)
+            {
+                updatePage();
+            }
+            else
             {
                 updatePageStats();
             }
-            else
-            {*/
-                updatePage();
-            //}
         }
         else
         {

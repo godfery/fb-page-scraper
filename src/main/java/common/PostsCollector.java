@@ -37,7 +37,10 @@ public class PostsCollector
             {
                 JSONObject postJson = (JSONObject) itr.next();
                 Post post = new Post(page, postJson);
-                post.writeJson();
+                if(Config.collectJson)
+                {
+                    post.writeJson();
+                }
                 post.updateDb();
             }
             JSONObject paging = (JSONObject) posts.get("paging");

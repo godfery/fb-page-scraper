@@ -29,9 +29,12 @@ public class CommentsCollector
 
         if(!comments.isEmpty())
         {
-            JSONObject obj = new JSONObject();
-            obj.put("data", comments);
-            writeCommentsJson(obj);
+            if(Config.collectJson)
+            {
+                JSONObject obj = new JSONObject();
+                obj.put("data", comments);
+                writeCommentsJson(obj);
+            }
 
             Iterator itr = comments.iterator();
             while (itr.hasNext())

@@ -3,6 +3,7 @@ package cmdline;
 import common.*;
 import db.DbManager;
 
+import java.io.File;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,6 +30,7 @@ public class FbCollector
             {
                 for(String page: Config.pages)
                 {
+                    pageUpdateCount++;
                     PageCollector pageCollector = new PageCollector(page);
                     pageCollector.collect();
                 }
@@ -63,6 +65,20 @@ public class FbCollector
         {
             System.err.println("invalid start date (since)");
             return false;
+        }
+        if(Config.collectJson)
+        {
+            if(null == Config.jsonDir || Config.jsonDir.isEmpty())
+            {
+                System.err.println("json directory is required if collectJson=true");
+                return false;
+            }
+            File jsonDir = new File(Config.jsonDir);
+            if(!jsonDir.exists() || !jsonDir.isDirectory())
+            {
+                System.err.println("invalid json directory");
+                return false;
+            }
         }
         return true;
     }
