@@ -33,6 +33,21 @@ public class Util
         return dbDateFormatter.format(date);
     }
 
+    public static String getCurDateTimeUtc()
+    {
+        DateFormat dbDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        dbDateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date date = new Date(System.currentTimeMillis());
+        return dbDateFormatter.format(date);
+    }
+
+    public static String getDateTimeUtc(long time)
+    {
+        DateFormat dbDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        dbDateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return dbDateFormatter.format(new Date(time));
+    }
+
     public static String getCurDateTimeDir()
     {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
@@ -40,6 +55,11 @@ public class Util
         long time = System.currentTimeMillis();
         Date date = new Date(time);
         return formatter.format(date);
+    }
+
+    public static long toMillis(String utcDateString)
+    {
+        return toMillis(utcDateString, TimeZone.getTimeZone("UTC"));
     }
 
     public static long toMillis(String dateString, TimeZone timeZone)
@@ -94,6 +114,7 @@ public class Util
         catch (Exception e)
         {
             System.err.println("reading failed for url: " + url);
+            System.err.println("check if your access token is valid");
         }
         finally
         {

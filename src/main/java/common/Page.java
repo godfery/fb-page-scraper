@@ -43,12 +43,13 @@ public class Page
     public Page(String username)
     {
         this.username = username;
+        this.id = DbManager.getFieldValue("Page", "id", "username", username);
     }
 
     public void writeJson()
     {
         String jsonDir = Util.buildPath(username, "page");
-        String path = jsonDir + "/" + Util.getCurDateTimeDir() + "_" + username + ".json";
+        String path = jsonDir + "/" + (Config.pageCrawl ? Util.getCurDateTimeDir() + "_" : "") + username + ".json";
         try
         {
             FileWriter writer = new FileWriter(path);
@@ -70,7 +71,7 @@ public class Page
     {
         if(pageExists())
         {
-            if((FbCollector.pageUpdateCount % 100) == 0)
+            if(Config.collectOnce || (FbCollector.pageUpdateCount % 100) == 0)
             {
                 updatePage();
             }

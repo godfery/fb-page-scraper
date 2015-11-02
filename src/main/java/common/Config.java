@@ -24,6 +24,7 @@ public class Config
     public static boolean collectComments;
     public static boolean pageCrawl;
     public static boolean postCrawl;
+    public static int waitTime;
     static
     {
         init();
@@ -58,6 +59,8 @@ public class Config
             collectComments = properties.getProperty("collectComments").toLowerCase().equals("true");
             pageCrawl = properties.getProperty("pageCrawl").toLowerCase().equals("true");
             postCrawl = properties.getProperty("postCrawl").toLowerCase().equals("true");
+            String tempWaitTime = properties.getProperty("waitTime");
+            waitTime = null != tempWaitTime && tempWaitTime.matches("\\d+") ? Integer.parseInt(tempWaitTime) : 300;
         }
         catch (IOException e)
         {

@@ -68,7 +68,7 @@ public class CommentsCollector
     private void writeCommentsJson(JSONObject commentsJson)
     {
         String jsonDir = Util.buildPath(page, "posts", postId);
-        String path = jsonDir + "/" + Util.getCurDateTimeDir() + "_comments.json";
+        String path = jsonDir + "/comments.json";
         try
         {
             FileWriter writer = new FileWriter(path);

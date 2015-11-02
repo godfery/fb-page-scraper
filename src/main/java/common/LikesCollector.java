@@ -4,57 +4,79 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.FileWriter;
+import java.util.Iterator;
 
 public class LikesCollector
 {
+    private String page;
     private String postId;
-    private String postDir;
     public JSONArray likes = new JSONArray();
-    public static final String likesFields = "id,name";
 
-    public LikesCollector(String postId, String postDir)
+    public LikesCollector(String page, String postId)
     {
-        this.postDir = postDir;
+        this.page = page;
         this.postId = postId;
     }
 
     public void collect()
     {
-        JSONObject json = Util.getJson(Config.baseUrl + "/" + postId + "/likes?limit=100&fields=" + likesFields + "&access_token=" + Config.accessToken);
+        String url = Config.baseUrl + "/" + postId + "/likes";
+        url += "?access_token=" + Config.accessToken;
+        url += "&fields=id,name";
 
-        while (null != json)
-        {
-            likes.addAll((JSONArray) json.get("data"));
-            JSONObject paging = (JSONObject) json.get("paging");
-            if(null != paging && null != paging.get("next"))
-            {
-                json = Util.getJson(paging.get("next").toString());
-            }
-            else
-            {
-                json = null;
-            }
-        }
+        collect(url);
 
         if(!likes.isEmpty())
         {
-            JSONObject obj = new JSONObject();
-            obj.put("data", likes);
-            writeJson(postDir + "/" + postId + "_likes.json", obj);
+            if(Config.collectJson)
+            {
+                JSONObject obj = new JSONObject();
+                obj.put("data", likes);
+                writeLikesJson(obj);
+            }
+
+            Iterator itr = likes.iterator();
+            while (itr.hasNext())
+            {
+                JSONObject likeJson = (JSONObject) itr.next();
+                Like like = new Like(postId, likeJson);
+                like.updateDb();
+            }
         }
     }
 
-    private void writeJson(String path, JSONObject jsonObject)
+    private void collect(String url)
     {
+        JSONObject likesJson = Util.getJson(url);
+        if(null != likesJson)
+        {
+            JSONArray likesData = (JSONArray) likesJson.get("data");
+            likes.addAll(likesData);
+            JSONObject paging = (JSONObject) likesJson.get("paging");
+            if(null != paging && null != paging.get("next"))
+            {
+                collect(paging.get("next").toString());
+            }
+        }
+        else
+        {
+            System.err.println("reading likes failed for url: " + url);
+        }
+    }
+
+    private void writeLikesJson(JSONObject likesJson)
+    {
+        String jsonDir = Util.buildPath(page, "posts", postId);
+        String path = jsonDir + "/likes.json";
         try
         {
             FileWriter writer = new FileWriter(path);
-            jsonObject.writeJSONString(writer);
+            likesJson.writeJSONString(writer);
             writer.close();
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            System.err.println("failed to write json file " + path);
         }
     }
 }

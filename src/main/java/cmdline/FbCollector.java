@@ -13,34 +13,56 @@ public class FbCollector
 {
     public static long pageUpdateCount = 0;
 
+    public static boolean postStats = false;
+
+    public static long tempSince = -1;
+
+    public static final long dayInMillis = 86400000;
+
     public static void main(String[] args) throws Exception
     {
-        //FbCollector collector = new FbCollector();
+        FbCollector collector = new FbCollector();
+        collector.collect();
     }
 
-    public void collect()
+    public void collect() throws InterruptedException
     {
         if(isConfigValid())
         {
-            if(Config.collectOnce)
+            if(null == Config.until || Config.until.isEmpty() || !Config.until.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
             {
-
+                Config.until = Util.getCurDateTimeUtc();
+            }
+            long configSince = Util.toMillis(Config.since);
+            long configUntil = Util.toMillis(Config.until);
+            if(tempSince == -1 || tempSince == configSince)
+            {
+                tempSince = configUntil - dayInMillis;
             }
             else
             {
-                for(String page: Config.pages)
-                {
-                    pageUpdateCount++;
-                    PageCollector pageCollector = new PageCollector(page);
-                    pageCollector.collect();
-                }
-                long curTime = System.currentTimeMillis();
-                long sinceTime = Util.toMillis(Config.since, TimeZone.getTimeZone("UTC"));
-                for(String page: Config.pages)
-                {
-                    PostsCollector postsCollector = new PostsCollector(new Page(page));
-                    postsCollector.collect();
-                }
+                tempSince = tempSince - dayInMillis;
+            }
+            if(tempSince < configSince)
+            {
+                tempSince = configSince;
+            }
+
+            pageUpdateCount++;
+            postStats = !postStats;
+            for(String page: Config.pages)
+            {
+                PageCollector pageCollector = new PageCollector(page);
+                pageCollector.collect();
+
+                PostsCollector postsCollector = new PostsCollector(new Page(page));
+                postsCollector.collect();
+            }
+            if(!Config.collectOnce)
+            {
+                Thread.sleep(Config.waitTime * 1000);
+                Config.init();
+                collect();
             }
         }
     }

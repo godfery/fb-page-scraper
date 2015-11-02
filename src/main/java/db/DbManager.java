@@ -29,17 +29,22 @@ public class DbManager
 
     public static boolean entryExists(String table, String key, String value)
     {
-        boolean exists = false;
+        return null != getFieldValue(table, key, key, value);
+    }
+
+    public static String getFieldValue(String table, String field, String keyName, String keyValue)
+    {
+        String fieldValue = null;
         Connection connection = DbManager.getConnection();
-        String query = "SELECT " + key + " FROM " + table + " WHERE " + key + "=?";
+        String query = "SELECT " + field + " FROM " + table + " WHERE " + keyName + "=?";
         try
         {
             PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, value);
+            statement.setString(1, keyValue);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next())
             {
-                exists = null != resultSet.getString(1);
+                fieldValue = resultSet.getString(1);
             }
             resultSet.close();
             statement.close();
@@ -48,7 +53,7 @@ public class DbManager
         {
             e.printStackTrace();
         }
-        return exists;
+        return fieldValue;
     }
 
     public static boolean isParamsValid()

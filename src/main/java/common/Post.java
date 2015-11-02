@@ -1,6 +1,5 @@
 package common;
 
-import cmdline.FbCollector;
 import db.DbManager;
 import org.json.simple.JSONObject;
 
@@ -77,12 +76,12 @@ public class Post
 
     public void writeJson()
     {
-        String jsonDir = Util.buildPath(page.getUsername(), "posts", id);
-        String path = jsonDir + "/" + Util.getCurDateTimeDir() + "_post.json";
+        String jsonDir = Util.buildPath(getPage().getUsername(), "posts", getId());
+        String path = jsonDir + "/" + (Config.postCrawl ? Util.getCurDateTimeDir() + "_" : "") + "post.json";
         try
         {
             FileWriter writer = new FileWriter(path);
-            post.writeJSONString(writer);
+            getPost().writeJSONString(writer);
             writer.close();
         }
         catch (Exception e)
@@ -93,7 +92,7 @@ public class Post
 
     public boolean postExists()
     {
-        return DbManager.entryExists("Post", "id", id);
+        return DbManager.entryExists("Post", "id", getId());
     }
 
     public void updateDb()
@@ -122,12 +121,12 @@ public class Post
                     + "SET message=?,updated_at=?,likes=?,comments=?,shares=? "
                     + "WHERE id=?";
             PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, message);
-            statement.setString(2, Util.toDbDateTime(updatedAt));
-            statement.setInt(3, likes);
-            statement.setInt(4, comments);
-            statement.setInt(5, shares);
-            statement.setString(6, id);
+            statement.setString(1, getMessage());
+            statement.setString(2, Util.toDbDateTime(getUpdatedAt()));
+            statement.setInt(3, getLikes());
+            statement.setInt(4, getComments());
+            statement.setInt(5, getShares());
+            statement.setString(6, getId());
             statement.executeUpdate();
             statement.close();
         }
@@ -150,8 +149,8 @@ public class Post
             statement.setString(1, id);
             statement.setString(2, page.getId());
             statement.setString(3, message);
-            statement.setString(4, Util.toDbDateTime(createdAt));
-            statement.setString(5, Util.toDbDateTime(updatedAt));
+            statement.setString(4, Util.toDbDateTime(getCreatedAt()));
+            statement.setString(5, Util.toDbDateTime(getUpdatedAt()));
             statement.setInt(6, likes);
             statement.setInt(7, comments);
             statement.setInt(8, shares);
@@ -175,7 +174,7 @@ public class Post
         {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, Util.getDbDateTimeUtc());
-            statement.setString(2, page.getId());
+            statement.setString(2, id);
             statement.setInt(3, likes);
             statement.setInt(4, comments);
             statement.setInt(5, shares);
@@ -187,5 +186,50 @@ public class Post
             e.printStackTrace();
         }
         try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+    }
+
+    public Page getPage()
+    {
+        return page;
+    }
+
+    public JSONObject getPost()
+    {
+        return post;
+    }
+
+    public String getId()
+    {
+        return id;
+    }
+
+    public String getMessage()
+    {
+        return message;
+    }
+
+    public String getCreatedAt()
+    {
+        return createdAt;
+    }
+
+    public int getLikes()
+    {
+        return likes;
+    }
+
+    public int getComments()
+    {
+        return comments;
+    }
+
+    public int getShares()
+    {
+        return shares;
+    }
+
+    public String getUpdatedAt()
+    {
+        return updatedAt;
     }
 }
