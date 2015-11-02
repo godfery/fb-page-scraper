@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,6 +40,22 @@ public class Util
         long time = System.currentTimeMillis();
         Date date = new Date(time);
         return formatter.format(date);
+    }
+
+    public static long toMillis(String dateString, TimeZone timeZone)
+    {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        formatter.setTimeZone(timeZone);
+        long time = 0;
+        try
+        {
+            time = formatter.parse(dateString).getTime();
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        return time;
     }
 
     public static String toDbDateTime(String utcDate)

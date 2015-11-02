@@ -1,6 +1,5 @@
 package common;
 
-import cmdline.FbCollector;
 import db.DbManager;
 import org.json.simple.JSONObject;
 
@@ -40,6 +39,11 @@ public class Page
         about = null != pageJson.get("about") ? pageJson.get("about").toString() : null;
     }
 
+    public Page(String username)
+    {
+        this.username = username;
+    }
+
     public void writeJson()
     {
         String jsonDir = Util.buildPath(username, "page");
@@ -61,18 +65,18 @@ public class Page
         return DbManager.entryExists("Page", "id", id);
     }
 
-    public void updateDb(boolean stats)
+    public void updateDb()
     {
         if(pageExists())
         {
-            if(stats)
+            /*if(stats)
             {
                 updatePageStats();
             }
             else
-            {
+            {*/
                 updatePage();
-            }
+            //}
         }
         else
         {

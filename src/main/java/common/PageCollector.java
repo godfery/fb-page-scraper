@@ -21,7 +21,7 @@ public class PageCollector
         this.page = page;
     }
 
-    public void collect(boolean stats)
+    public void collect()
     {
         String url = Config.baseUrl + "/" + page +
                 "?fields=id,username,name,likes,talking_about_count," +
@@ -32,7 +32,7 @@ public class PageCollector
         {
             Page page = new Page(pageJson);
             page.writeJson();
-            page.updateDb(stats);
+            page.updateDb();
         }
         else
         {
