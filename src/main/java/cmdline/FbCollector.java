@@ -17,6 +17,8 @@ public class FbCollector
 
     public static final long dayInMillis = 86400000;
 
+    public static int scrapeCount = 0;
+
     public static void main(String[] args) throws Exception
     {
         FbCollector collector = new FbCollector();
@@ -39,6 +41,13 @@ public class FbCollector
             }
 
             loopIndex++;
+
+            if(tempSince == Util.toMillis(Config.since))
+            {
+                scrapeCount++;
+                System.out.println("Completed fetching all data " + scrapeCount + " time(s)");
+                Util.sleep(300);
+            }
 
             if(!Config.collectOnce)
             {

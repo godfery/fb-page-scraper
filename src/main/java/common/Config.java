@@ -22,8 +22,7 @@ public class Config
     public static String dbUser;
     public static String dbPass;
     public static boolean collectComments;
-    public static boolean pageCrawl;
-    public static boolean postCrawl;
+    public static boolean crawlHistory;
     public static int waitTime;
     static
     {
@@ -57,8 +56,7 @@ public class Config
             dbUser = properties.getProperty("dbUser");
             dbPass = properties.getProperty("dbPass");
             collectComments = properties.getProperty("collectComments").toLowerCase().equals("true");
-            pageCrawl = properties.getProperty("pageCrawl").toLowerCase().equals("true");
-            postCrawl = properties.getProperty("postCrawl").toLowerCase().equals("true");
+            crawlHistory = properties.getProperty("crawlHistory").toLowerCase().equals("true");
             String tempWaitTime = properties.getProperty("waitTime");
             waitTime = (null != tempWaitTime) && tempWaitTime.matches("\\d+") ? Integer.parseInt(tempWaitTime) : 10;
         }

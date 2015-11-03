@@ -49,7 +49,7 @@ public class Page
     public void writeJson()
     {
         String jsonDir = Util.buildPath(username, "page");
-        String path = jsonDir + "/" + (Config.pageCrawl ? Util.getCurDateTimeDir() + "_" : "") + username + ".json";
+        String path = jsonDir + "/" + (Config.crawlHistory ? Util.getCurDateTimeDir() + "_" : "") + username + ".json";
         try
         {
             FileWriter writer = new FileWriter(path);
@@ -85,7 +85,7 @@ public class Page
             insertPage();
         }
 
-        if(Config.pageCrawl)
+        if(Config.crawlHistory)
         {
             insertPageCrawl();
         }

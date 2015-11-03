@@ -33,8 +33,7 @@ collectJson=false
 jsonDir=
 # Use this only if it is absolutely required for your research
 # Set this to true if you want to keep statistics of previous crawls
-pageCrawl=false
-postCrawl=false
+crawlHistory=false
 # Advanced usage
 # wait time between fetch iterations in seconds
 # waitTime=

@@ -107,7 +107,7 @@ public class Post
     public void writeJson()
     {
         String jsonDir = Util.buildPath(getPage().getUsername(), "posts", getId());
-        String path = jsonDir + "/" + (Config.postCrawl ? Util.getCurDateTimeDir() + "_" : "") + "post.json";
+        String path = jsonDir + "/" + (Config.crawlHistory ? Util.getCurDateTimeDir() + "_" : "") + "post.json";
         try
         {
             FileWriter writer = new FileWriter(path);
@@ -136,7 +136,7 @@ public class Post
             insertPost();
         }
 
-        if(Config.postCrawl)
+        if(Config.crawlHistory)
         {
             insertPostCrawl();
         }
