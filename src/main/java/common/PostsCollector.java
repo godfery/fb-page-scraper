@@ -27,7 +27,8 @@ public class PostsCollector
             long curTime = System.currentTimeMillis();
             long configSince = Util.toMillis(Config.since);
             long configUntil = Util.toMillis(Config.until);
-            if(FbCollector.postStats)
+
+            if(FbCollector.loopIndex % 2 == 0)
             {
                 if(configUntil > (curTime - (2 * FbCollector.dayInMillis)))
                 {
@@ -49,28 +50,35 @@ public class PostsCollector
             }
         }
 
-        collect(getCollectUrl(tempSince, tempUntil));
+        /**
+         * Collect posts from tempSince to tempUntil
+         */
+        String url = getCollectUrl(tempSince, tempUntil);
+        collect(url);
 
-        if(Config.collectOnce)
+        /**
+         * Collect comments for the above posts
+         */
+        if(Config.collectComments)
         {
-            if(Config.collectComments)
+            if(Config.collectOnce)
             {
                 for(String postId: postIds)
                 {
                     CommentsCollector commentsCollector = new CommentsCollector(page.getUsername(), postId);
                     commentsCollector.collect();
-                    try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+                    Util.sleep(5);
                 }
             }
-        }
-        else
-        {
-            if(!FbCollector.postStats)
+            else
             {
                 for(String postId: postIds)
                 {
                     CommentsCollector commentsCollector = new CommentsCollector(page.getUsername(), postId);
-                    commentsCollector.collect();
+                    if(commentsCollector.isFetchRequired())
+                    {
+                        commentsCollector.collect();
+                    }
                 }
             }
         }
@@ -84,7 +92,6 @@ public class PostsCollector
         url += "&since=" + since;
         url += "&until=" + until;
         url += "&fields=id,message,created_time,shares,likes.limit(1).summary(true),comments.limit(1).summary(true),updated_time";
-        //System.out.println(url);
         return url;
     }
 

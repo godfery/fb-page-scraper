@@ -11,9 +11,7 @@ import java.util.TimeZone;
 
 public class FbCollector
 {
-    public static long pageUpdateCount = 0;
-
-    public static boolean postStats = false;
+    public static long loopIndex = 0;
 
     public static long tempSince = -1;
 
@@ -29,27 +27,8 @@ public class FbCollector
     {
         if(isConfigValid())
         {
-            if(null == Config.until || Config.until.isEmpty() || !Config.until.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
-            {
-                Config.until = Util.getCurDateTimeUtc();
-            }
-            long configSince = Util.toMillis(Config.since);
-            long configUntil = Util.toMillis(Config.until);
-            if(tempSince == -1 || tempSince == configSince)
-            {
-                tempSince = configUntil - dayInMillis;
-            }
-            else
-            {
-                tempSince = tempSince - dayInMillis;
-            }
-            if(tempSince < configSince)
-            {
-                tempSince = configSince;
-            }
+            initTempSince();
 
-            pageUpdateCount++;
-            postStats = !postStats;
             for(String page: Config.pages)
             {
                 PageCollector pageCollector = new PageCollector(page);
@@ -58,12 +37,37 @@ public class FbCollector
                 PostsCollector postsCollector = new PostsCollector(new Page(page));
                 postsCollector.collect();
             }
+
+            loopIndex++;
+
             if(!Config.collectOnce)
             {
-                Thread.sleep(Config.waitTime * 1000);
+                Util.sleep(Config.waitTime);
                 Config.init();
                 collect();
             }
+        }
+    }
+
+    public void initTempSince()
+    {
+        if(null == Config.until || Config.until.isEmpty() || !Config.until.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
+        {
+            Config.until = Util.getCurDateTimeUtc();
+        }
+        long configSince = Util.toMillis(Config.since);
+        long configUntil = Util.toMillis(Config.until);
+        if(tempSince == -1 || tempSince == configSince)
+        {
+            tempSince = configUntil - dayInMillis;
+        }
+        else
+        {
+            tempSince = tempSince - dayInMillis;
+        }
+        if(tempSince < configSince)
+        {
+            tempSince = configSince;
         }
     }
 

@@ -1,15 +1,40 @@
+# Rename or copy this file to config.properties
+# Place the config.properties file in the same directory as your fb-collector.jar before running
+# Get your facebook access token (getting extended token is STRONGLY suggested)
 accessToken=
+# Comma separated facebook public pages
+# Example:
+# pages=Microsoft,Google
 pages=
-# jdbc:mysql://<ip-address>:3306/<database>
-dbUrl=
+# JDBC connection URL for your database
+dbUrl=jdbc:mysql://<mysql-server-ip-address>:3306/<database-name>
+# Database username
 dbUser=
+# Database password
 dbPass=
-# since=2015-10-20T00:00:00
+# Datetime in UTC format
+# It is the start datetime from when you want the data for public pages to be collected
+# example:
+# since=2015-10-01T00:00:00
 since=
+# Datetime in UTC format
+# It the end datetime until you want the data for public pages to be collected
+# You do NOT need this if you want to keep the scraper running for fetching current and future data for pages
+# You need this only if your end datetime is a historic datetime
 until=
+# Set this to "true" only if you want to run the scraper once and don't need to keep fetching data
 collectOnce=false
+# Set this to "true" if you want to fetch comments for the posts
 collectComments=false
+# Set this to "true" only if you want to download json data for your fetch
 collectJson=false
+# Full path to your json data directory
+# You need this only if you have set collectJson=true (see above)
 jsonDir=
+# Use this only if it is absolutely required for your research
+# Set this to true if you want to keep statistics of previous crawls
 pageCrawl=false
 postCrawl=false
+# Advanced usage
+# wait time between fetch iterations in seconds
+# waitTime=

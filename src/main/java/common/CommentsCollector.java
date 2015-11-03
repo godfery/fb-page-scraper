@@ -1,10 +1,15 @@
 package common;
 
 import cmdline.FbCollector;
+import db.DbManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.FileWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 public class CommentsCollector
@@ -79,5 +84,38 @@ public class CommentsCollector
         {
             System.err.println("failed to write json file " + path);
         }
+    }
+
+    public boolean isFetchRequired()
+    {
+        return getCommentsCount() < new Post(postId).getComments();
+    }
+
+    public int getCommentsCount()
+    {
+        int count = 0;
+        Connection connection = DbManager.getConnection();
+        String query = "SELECT COUNT(*) AS Count FROM Comment WHERE post_id=?";
+        try
+        {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, postId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next())
+            {
+                count = resultSet.getInt(1);
+            }
+            resultSet.close();
+            statement.close();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+        return count;
     }
 }

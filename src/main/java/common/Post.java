@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 import java.io.FileWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Post
@@ -31,6 +32,35 @@ public class Post
         likes = getLikesCount(postJson);
         comments = getCommentsCount(postJson);
         updatedAt = null != postJson.get("updated_time") ? postJson.get("updated_time").toString() : null;
+    }
+
+    public Post(String postId)
+    {
+        this.id = postId;
+        Connection connection = DbManager.getConnection();
+        String query = "SELECT likes,comments,shares FROM Post WHERE id=?";
+        try
+        {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, postId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next())
+            {
+                this.likes = resultSet.getInt(1);
+                this.comments = resultSet.getInt(2);
+                this.shares = resultSet.getInt(3);
+            }
+            resultSet.close();
+            statement.close();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
     }
 
     public static int getLikesCount(JSONObject post)

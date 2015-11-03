@@ -53,6 +53,10 @@ public class DbManager
         {
             e.printStackTrace();
         }
+        finally
+        {
+            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
         return fieldValue;
     }
 

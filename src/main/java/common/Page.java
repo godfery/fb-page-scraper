@@ -71,7 +71,7 @@ public class Page
     {
         if(pageExists())
         {
-            if(Config.collectOnce || (FbCollector.pageUpdateCount % 100) == 0)
+            if(Config.collectOnce || (FbCollector.loopIndex % 100) == 0)
             {
                 updatePage();
             }

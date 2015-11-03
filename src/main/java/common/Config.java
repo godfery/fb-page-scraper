@@ -60,7 +60,7 @@ public class Config
             pageCrawl = properties.getProperty("pageCrawl").toLowerCase().equals("true");
             postCrawl = properties.getProperty("postCrawl").toLowerCase().equals("true");
             String tempWaitTime = properties.getProperty("waitTime");
-            waitTime = null != tempWaitTime && tempWaitTime.matches("\\d+") ? Integer.parseInt(tempWaitTime) : 300;
+            waitTime = (null != tempWaitTime) && tempWaitTime.matches("\\d+") ? Integer.parseInt(tempWaitTime) : 10;
         }
         catch (IOException e)
         {
