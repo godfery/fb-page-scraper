@@ -5,16 +5,20 @@ This tool is especially built for keeping it running and collecting large amount
 
 ## Quick start guide
 * Install MySQL server
+ 
+* Download **db.schema.sql**, **config.properties.template** and **fb-scraper.jar** from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/)
 * Create facebook database  
      <pre>CREATE DATABASE facebook 
 DEFAULT CHARACTER SET utf8 
-DEFAULT COLLATE utf8_general_ci;</pre>
-* Download db.schema.sql, config.properties.template and fb-scraper.jar from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/) 
-* Create tables in facebook database by running
+DEFAULT COLLATE utf8_general_ci;</pre> 
+* Create tables in facebook database
      <pre>mysql -u root -pRootPwd facebook < db.schema.sql</pre>
-* Rename config.properties.template to config.properties, open in a text editor and make relevant changes by following inline instructions
+* Rename config.properties.template to **config.properties**, open in a text editor and make relevant changes by following inline instructions 
+
 * Start fetching data  
     <pre>java -jar fb-scraper.jar 2>&1 >> log.txt &</pre>
+
+Note: Your config.properties and fb-scraper.jar should be located in the same directory
 
 ## License  
 Copyright [2015] [Yatish Hegde]
