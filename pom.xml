@@ -68,7 +68,7 @@
                             <mainClass>cmdline.FbCollector</mainClass>
                         </manifest>
                     </archive>
-                    <finalName>fb-collector</finalName>
+                    <finalName>fb-scraper</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
