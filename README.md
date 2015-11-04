@@ -1,7 +1,7 @@
 # Facebook Page Scraper
-Facebook Page Scraper is a tool for collecting data from public facebook pages. The tool uses Facebook's Graph API to collect data. Using this tool, you can collect posts, comments, likes, shares data from public facebook pages. The collected data is written to a MySQL database. Optionally, the tool allows you to download the data in json format.
+Facebook Page Scraper is a tool for collecting data from public facebook pages. This tool uses Facebook's Graph API to collect data. Using this tool, you can collect posts, comments, likes, shares data from public facebook pages. The collected data is written to a MySQL database. Optionally, the tool allows you to download the data in json format.
 
-This tool is especially designed to keep it running and collect large amount of historical, current and future data (posts, comments etc.) from multiple public facebook pages. Check config.properties.template file for various configuration options for running the tool.      
+This tool is especially built for keeping it running and collecting large amount of historical, current and future data (posts, comments etc.) from multiple public facebook pages. Check config.properties.template file for various configuration options for running the tool.      
 
 ## Quick start guide
 * Install MySQL server
@@ -9,10 +9,10 @@ This tool is especially designed to keep it running and collect large amount of 
      <pre>CREATE DATABASE facebook 
 DEFAULT CHARACTER SET utf8 
 DEFAULT COLLATE utf8_general_ci;</pre>
-* Download [db.schema.sql] (https://github.com/yhegde/fb-page-scraper/tree/1.0/src/main/resources/db.schema.sql), [config.properties.template] (https://github.com/yhegde/fb-page-scraper/tree/1.0/src/main/resources/config.properties.template) and [fb-scraper.jar] (https://github.com/yhegde/fb-page-scraper/tree/1.0/target/fb-scraper.jar) 
+* Download db.schema.sql, config.properties.template and fb-scraper.jar from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/) 
 * Create tables in facebook database by running
      <pre>mysql -u root -pRootPwd facebook < db.schema.sql</pre>
-* Rename config.properties.template to config.properties, open in a text editor and make necessary changes
+* Rename config.properties.template to config.properties, open in a text editor and make relevant changes by following inline instructions
 * Start fetching data  
     <pre>java -jar fb-scraper.jar 2>&1 >> log.txt &</pre>
 
