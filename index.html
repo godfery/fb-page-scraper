@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Fb-page-scraper by yhegde</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Fb-page-scraper</h1>
+        <p>Facebook Page Scraper is a tool for collecting data from public facebook pages. This tool uses Facebook&#39;s Graph API to collect data. Using this tool, you can collect posts, comments, likes, shares data from public facebook pages. The collected data is written to a MySQL database. Optionally, the tool allows you to download the data in json format.</p>
+
+        <p class="view"><a href="https://github.com/yhegde/fb-page-scraper">View the Project on GitHub <small>yhegde/fb-page-scraper</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/yhegde/fb-page-scraper/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/yhegde/fb-page-scraper/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/yhegde/fb-page-scraper">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="facebook-page-scraper" class="anchor" href="#facebook-page-scraper" aria-hidden="true"><span class="octicon octicon-link"></span></a>Facebook Page Scraper</h1>
+
+<p>Facebook Page Scraper is a tool for collecting data from public facebook pages. This tool uses Facebook's Graph API to collect data. Using this tool, you can collect posts, comments, likes, shares data from public facebook pages. The collected data is written to a MySQL database. Optionally, the tool allows you to download the data in json format.</p>
+
+<p>This tool is especially built for keeping it running and collecting large amount of historical, current and future data (posts, comments etc.) from multiple public facebook pages. Check config.properties.template file for various configuration options for running the tool.      </p>
+
+<h2>
+<a id="quick-start-guide" class="anchor" href="#quick-start-guide" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quick start guide</h2>
+
+<ul>
+<li><p>Install MySQL server</p></li>
+<li><p>Download <strong>db.schema.sql</strong>, <strong>config.properties.template</strong> and <strong>fb-scraper.jar</strong> from <a href="https://github.com/yhegde/fb-page-scraper/releases/">latest release</a></p></li>
+<li>Create facebook database<br>
+ <pre>CREATE DATABASE facebook 
+DEFAULT CHARACTER SET utf8 
+DEFAULT COLLATE utf8_general_ci;</pre> </li>
+<li>Create tables in facebook database
+ <pre>mysql -u root -pRootPwd facebook &lt; db.schema.sql</pre>
+</li>
+<li><p>Rename config.properties.template to <strong>config.properties</strong>, open in a text editor and make relevant changes by following inline instructions </p></li>
+<li>
+<p>Start fetching data  </p>
+
+<pre>java -jar fb-scraper.jar 2&gt;&amp;1 &gt;&gt; log.txt &amp;</pre>
+</li>
+</ul>
+
+<p>Note: Your config.properties and fb-scraper.jar should be located in the same directory</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>Copyright [2015] [Yatish Hegde]</p>
+
+<p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this software except in compliance with the License. You may obtain a copy of the License at <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/yhegde">yhegde</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
