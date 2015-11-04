@@ -19,6 +19,10 @@ public class FbCollector
 
     public static int scrapeCount = 0;
 
+    public static int postsCount = 0;
+
+    public static int commentsCount = 0;
+
     public static void main(String[] args) throws Exception
     {
         FbCollector collector = new FbCollector();
@@ -30,6 +34,12 @@ public class FbCollector
         if(isConfigValid())
         {
             initTempSince();
+
+            if(loopIndex == 0)
+            {
+                System.out.println("Validated configurations file");
+                System.out.println("Started fetching data");
+            }
 
             for(String page: Config.pages)
             {
@@ -45,8 +55,11 @@ public class FbCollector
             if(tempSince == Util.toMillis(Config.since))
             {
                 scrapeCount++;
-                System.out.println("Completed fetching all data " + scrapeCount + " time(s)");
-                Util.sleep(300);
+                if(scrapeCount == 1)
+                {
+                    System.out.println("Completed fetching all historic data from " + Config.since + " until " + Config.until);
+                    System.out.println("Continuing to fetch current and future data");
+                }
             }
 
             if(!Config.collectOnce)

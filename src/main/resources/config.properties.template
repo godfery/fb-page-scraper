@@ -19,7 +19,7 @@ dbPass=
 since=
 # Datetime in UTC format
 # It the end datetime until you want the data for public pages to be collected
-# You do NOT need this if you want to keep the scraper running for fetching current and future data for pages
+# You SHOULD leave this blank if you want to keep the scraper running for fetching historic, current and future data for pages
 # You need this only if your end datetime is a historic datetime
 until=
 # Set this to "true" only if you want to run the scraper once and don't need to keep fetching data
@@ -36,4 +36,4 @@ jsonDir=
 crawlHistory=false
 # Advanced usage
 # wait time between fetch iterations in seconds
-# waitTime=
+# waitTime=60

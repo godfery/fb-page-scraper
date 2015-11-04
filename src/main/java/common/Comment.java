@@ -1,5 +1,6 @@
 package common;
 
+import cmdline.FbCollector;
 import db.DbManager;
 import org.json.simple.JSONObject;
 
@@ -46,6 +47,11 @@ public class Comment
         else
         {
             insertComment();
+            if(++FbCollector.commentsCount % 1000 == 0)
+            {
+                System.out.println("Fetched " + FbCollector.commentsCount + " new comments");
+                FbCollector.commentsCount = 0;
+            }
         }
     }
 

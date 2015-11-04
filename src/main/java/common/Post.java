@@ -1,5 +1,6 @@
 package common;
 
+import cmdline.FbCollector;
 import db.DbManager;
 import org.json.simple.JSONObject;
 
@@ -134,6 +135,11 @@ public class Post
         else
         {
             insertPost();
+            if(++FbCollector.postsCount % 10 == 0)
+            {
+                System.out.println("Fetched " + FbCollector.postsCount + " new posts");
+                FbCollector.postsCount = 0;
+            }
         }
 
         if(Config.crawlHistory)
