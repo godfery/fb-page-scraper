@@ -16,7 +16,7 @@ DEFAULT COLLATE utf8_general_ci;</pre>
 * Rename config.properties.template to **config.properties**, open in a text editor and make relevant changes by following inline instructions 
 
 * Start fetching data  
-    <pre>java -jar fb-scraper.jar 2>&1 >> log.txt &</pre>
+    <pre>java -jar fb-scraper.jar >> log.txt 2>&1 &</pre>
 
 Note: Your config.properties and fb-scraper.jar should be located in the same directory
 
