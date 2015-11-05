@@ -41,13 +41,15 @@ public class CommentsCollector
                 writeCommentsJson(obj);
             }
 
+            List<Comment> allComments = new ArrayList<Comment>();
             Iterator itr = comments.iterator();
             while (itr.hasNext())
             {
                 JSONObject commentJson = (JSONObject) itr.next();
                 Comment comment = new Comment(postId, commentJson);
-                comment.updateDb();
+                allComments.add(comment);
             }
+            updateDb(allComments);
         }
     }
 
@@ -96,17 +98,17 @@ public class CommentsCollector
         int count = 0;
         Connection connection = DbManager.getConnection();
         String query = "SELECT COUNT(*) AS Count FROM Comment WHERE post_id=?";
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
         try
         {
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
             statement.setString(1, postId);
-            ResultSet resultSet = statement.executeQuery();
+            resultSet = statement.executeQuery();
             if (resultSet.next())
             {
                 count = resultSet.getInt(1);
             }
-            resultSet.close();
-            statement.close();
         }
         catch (SQLException e)
         {
@@ -114,8 +116,134 @@ public class CommentsCollector
         }
         finally
         {
-            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != resultSet) try { resultSet.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
         return count;
+    }
+
+    public void updateDb(List<Comment> comments)
+    {
+        List<Comment> insertComments = new ArrayList<Comment>();
+        List<Comment> updateComments = new ArrayList<Comment>();
+        Connection connection = DbManager.getConnection();
+        String query = "SELECT id FROM Comment WHERE id=?";
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try
+        {
+            statement = connection.prepareStatement(query);
+            for(Comment comment: comments)
+            {
+                statement.setString(1, comment.getId());
+                resultSet = statement.executeQuery();
+                if(resultSet.next())
+                {
+                    if(null == resultSet.getString(1))
+                    {
+                        insertComments.add(comment);
+
+                        if(++FbCollector.commentsCount % 1000 == 0)
+                        {
+                            System.out.println("Fetched " + FbCollector.commentsCount + " new comments");
+                            FbCollector.commentsCount = 0;
+                        }
+                    }
+                    else
+                    {
+                        updateComments.add(comment);
+                    }
+                }
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            if(null != resultSet) try { resultSet.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+        insertComments(insertComments);
+        updateComments(updateComments);
+    }
+
+    public void insertComments(List<Comment> comments)
+    {
+        final int batchSize = 100;
+        int count = 0;
+        Connection connection = DbManager.getConnection();
+        String query = "INSERT INTO Comment "
+                + "(id, post_id, message, created_at, from_id, from_name, likes) "
+                + "VALUES (?,?,?,?,?,?,?)";
+        PreparedStatement statement = null;
+        try
+        {
+            statement = connection.prepareStatement(query);
+            for(Comment comment: comments)
+            {
+                statement.setString(1, comment.getId());
+                statement.setString(2, comment.getPostId());
+                statement.setString(3, comment.getMessage());
+                statement.setString(4, Util.toDbDateTime(comment.getCreatedAt()));
+                statement.setString(5, comment.getFromId());
+                statement.setString(6, comment.getFromName());
+                statement.setInt(7, comment.getLikes());
+                statement.addBatch();
+
+                if(++count % batchSize == 0)
+                {
+                    statement.executeBatch();
+                }
+            }
+            statement.executeBatch();
+        }
+        catch (SQLException e)
+        {
+            System.err.println("failed to insert comments for post: " + postId);
+        }
+        finally
+        {
+            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+    }
+
+    public void updateComments(List<Comment> comments)
+    {
+        final int batchSize = 100;
+        int count = 0;
+        Connection connection = DbManager.getConnection();
+        String query = "UPDATE Comment SET message=?,likes=? WHERE id=?";
+        PreparedStatement statement = null;
+        try
+        {
+            statement = connection.prepareStatement(query);
+            for(Comment comment: comments)
+            {
+                statement.setString(1, comment.getMessage());
+                statement.setInt(2, comment.getLikes());
+                statement.setString(3, comment.getId());
+                statement.addBatch();
+
+                if(++count % batchSize == 0)
+                {
+                    statement.executeBatch();
+                }
+            }
+            statement.executeBatch();
+        }
+        catch (SQLException e)
+        {
+            System.err.println("failed to insert comments for post: " + postId);
+        }
+        finally
+        {
+            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
     }
 }

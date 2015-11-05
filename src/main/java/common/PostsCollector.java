@@ -21,6 +21,7 @@ public class PostsCollector
     {
         String tempSince = Config.since;
         String tempUntil = Config.until;
+        boolean collectStats = FbCollector.loopIndex % 2 == 0;
 
         if(!Config.collectOnce)
         {
@@ -28,7 +29,7 @@ public class PostsCollector
             long configSince = Util.toMillis(Config.since);
             long configUntil = Util.toMillis(Config.until);
 
-            if(FbCollector.loopIndex % 2 == 0)
+            if(collectStats)
             {
                 if(configUntil > (curTime - (2 * FbCollector.dayInMillis)))
                 {
@@ -72,12 +73,15 @@ public class PostsCollector
             }
             else
             {
-                for(String postId: postIds)
+                if(!collectStats)
                 {
-                    CommentsCollector commentsCollector = new CommentsCollector(page.getUsername(), postId);
-                    if(commentsCollector.isFetchRequired())
+                    for(String postId: postIds)
                     {
-                        commentsCollector.collect();
+                        CommentsCollector commentsCollector = new CommentsCollector(page.getUsername(), postId);
+                        if(commentsCollector.isFetchRequired())
+                        {
+                            commentsCollector.collect();
+                        }
                     }
                 }
             }

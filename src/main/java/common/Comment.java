@@ -1,12 +1,7 @@
 package common;
 
-import cmdline.FbCollector;
 import db.DbManager;
 import org.json.simple.JSONObject;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 public class Comment
 {
@@ -35,69 +30,41 @@ public class Comment
 
     public boolean commentExists()
     {
-        return DbManager.entryExists("Comment", "id", id);
+        return DbManager.entryExists("Comment", "id", getId());
     }
 
-    public void updateDb()
+    public String getPostId()
     {
-        if(commentExists())
-        {
-            updateComment();
-        }
-        else
-        {
-            insertComment();
-            if(++FbCollector.commentsCount % 1000 == 0)
-            {
-                System.out.println("Fetched " + FbCollector.commentsCount + " new comments");
-                FbCollector.commentsCount = 0;
-            }
-        }
+        return postId;
     }
 
-    private void insertComment()
+    public String getId()
     {
-        Connection connection = DbManager.getConnection();
-        String query = "INSERT INTO Comment "
-                + "(id, post_id, message, created_at, from_id, from_name, likes) "
-                + "VALUES (?,?,?,?,?,?,?)";
-        try
-        {
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, id);
-            statement.setString(2, postId);
-            statement.setString(3, message);
-            statement.setString(4, Util.toDbDateTime(createdAt));
-            statement.setString(5, fromId);
-            statement.setString(6, fromName);
-            statement.setInt(7, likes);
-            statement.executeUpdate();
-            statement.close();
-        }
-        catch (SQLException e)
-        {
-            System.err.println("failed to insert comments for post: " + postId);
-        }
-        try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        return id;
     }
 
-    public void updateComment()
+    public String getMessage()
     {
-        Connection connection = DbManager.getConnection();
-        String query = "UPDATE Comment SET message=?,likes=? WHERE id=?";
-        try
-        {
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, message);
-            statement.setInt(2, likes);
-            statement.setString(3, id);
-            statement.executeUpdate();
-            statement.close();
-        }
-        catch (SQLException e)
-        {
-            System.err.println("failed to update comments for post: " + postId);
-        }
-        try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        return message;
+    }
+
+    public String getCreatedAt()
+    {
+        return createdAt;
+    }
+
+    public int getLikes()
+    {
+        return likes;
+    }
+
+    public String getFromId()
+    {
+        return fromId;
+    }
+
+    public String getFromName()
+    {
+        return fromName;
     }
 }

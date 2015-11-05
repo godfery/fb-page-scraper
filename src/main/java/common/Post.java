@@ -40,19 +40,19 @@ public class Post
         this.id = postId;
         Connection connection = DbManager.getConnection();
         String query = "SELECT likes,comments,shares FROM Post WHERE id=?";
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
         try
         {
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
             statement.setString(1, postId);
-            ResultSet resultSet = statement.executeQuery();
+            resultSet = statement.executeQuery();
             if (resultSet.next())
             {
                 this.likes = resultSet.getInt(1);
                 this.comments = resultSet.getInt(2);
                 this.shares = resultSet.getInt(3);
             }
-            resultSet.close();
-            statement.close();
         }
         catch (SQLException e)
         {
@@ -60,7 +60,9 @@ public class Post
         }
         finally
         {
-            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != resultSet) try { resultSet.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
     }
 
@@ -151,12 +153,13 @@ public class Post
     private void updatePost()
     {
         Connection connection = DbManager.getConnection();
+        String query = "UPDATE Post "
+                + "SET message=?,updated_at=?,likes=?,comments=?,shares=? "
+                + "WHERE id=?";
+        PreparedStatement statement = null;
         try
         {
-            String query = "UPDATE Post "
-                    + "SET message=?,updated_at=?,likes=?,comments=?,shares=? "
-                    + "WHERE id=?";
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
             statement.setString(1, getMessage());
             statement.setString(2, Util.toDbDateTime(getUpdatedAt()));
             statement.setInt(3, getLikes());
@@ -164,13 +167,16 @@ public class Post
             statement.setInt(5, getShares());
             statement.setString(6, getId());
             statement.executeUpdate();
-            statement.close();
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
-        try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        finally
+        {
+            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
     }
 
     private void insertPost()
@@ -179,9 +185,10 @@ public class Post
         String query = "INSERT INTO Post "
                 + "(id,page_id,message,created_at,updated_at,likes,comments,shares) "
                 + "VALUES (?,?,?,?,?,?,?,?)";
+        PreparedStatement statement = null;
         try
         {
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
             statement.setString(1, id);
             statement.setString(2, page.getId());
             statement.setString(3, message);
@@ -191,13 +198,16 @@ public class Post
             statement.setInt(7, comments);
             statement.setInt(8, shares);
             statement.executeUpdate();
-            statement.close();
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
-        try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        finally
+        {
+            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
     }
 
     private void insertPostCrawl()
@@ -206,22 +216,26 @@ public class Post
         String query = "INSERT INTO PostCrawl "
                 + "(crawl_date,post_id,likes,comments,shares) "
                 + "VALUES (?,?,?,?,?)";
+        PreparedStatement statement = null;
         try
         {
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
             statement.setString(1, Util.getDbDateTimeUtc());
             statement.setString(2, id);
             statement.setInt(3, likes);
             statement.setInt(4, comments);
             statement.setInt(5, shares);
             statement.executeUpdate();
-            statement.close();
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
-        try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        finally
+        {
+            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
     }
 
     public Page getPage()

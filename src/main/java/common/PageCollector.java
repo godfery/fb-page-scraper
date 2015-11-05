@@ -1,16 +1,7 @@
 package common;
 
-import cmdline.FbCollector;
-import db.DbManager;
 import org.json.simple.JSONObject;
 
-import java.io.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 public class PageCollector
 {

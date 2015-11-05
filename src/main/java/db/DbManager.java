@@ -37,17 +37,17 @@ public class DbManager
         String fieldValue = null;
         Connection connection = DbManager.getConnection();
         String query = "SELECT " + field + " FROM " + table + " WHERE " + keyName + "=?";
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
         try
         {
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
             statement.setString(1, keyValue);
-            ResultSet resultSet = statement.executeQuery();
+            resultSet = statement.executeQuery();
             if (resultSet.next())
             {
                 fieldValue = resultSet.getString(1);
             }
-            resultSet.close();
-            statement.close();
         }
         catch (SQLException e)
         {
@@ -55,7 +55,9 @@ public class DbManager
         }
         finally
         {
-            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != resultSet) try { resultSet.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
         return fieldValue;
     }
@@ -74,7 +76,7 @@ public class DbManager
         }
         finally
         {
-            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
         return valid;
     }

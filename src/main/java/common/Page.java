@@ -28,7 +28,7 @@ public class Page
     {
         json = pageJson;
         id = pageJson.get("id").toString();
-        username = null != pageJson.get("username") ? pageJson.get("username").toString() : null;
+        username = null != pageJson.get("username") ? pageJson.get("username").toString() : id;
         name =  null != pageJson.get("name") ? pageJson.get("name").toString() : null;
         likes = null != pageJson.get("likes") ? Integer.parseInt(pageJson.get("likes").toString()) : 0;
         talkingAbout = null != pageJson.get("talking_about_count") ? Integer.parseInt(pageJson.get("talking_about_count").toString()) : 0;
@@ -97,9 +97,10 @@ public class Page
         String query = "INSERT INTO Page "
                 + "(id,username,name,likes,talking_about,checkins,website,link,category,affiliation,about) "
                 + "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+        PreparedStatement statement = null;
         try
         {
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
             statement.setString(1, id);
             statement.setString(2, username);
             statement.setString(3, name);
@@ -112,13 +113,16 @@ public class Page
             statement.setString(10, affiliation);
             statement.setString(11, about);
             statement.executeUpdate();
-            statement.close();
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
-        try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        finally
+        {
+            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
     }
 
     private void updatePage()
@@ -127,9 +131,10 @@ public class Page
         String query = "UPDATE Page "
                 + "SET username=?,name=?,likes=?,talking_about=?,checkins=?,website=?,link=?,category=?,affiliation=?,about=? "
                 + "WHERE id=?";
+        PreparedStatement statement = null;
         try
         {
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
             statement.setString(1, username);
             statement.setString(2, name);
             statement.setInt(3, likes);
@@ -142,54 +147,65 @@ public class Page
             statement.setString(10, about);
             statement.setString(11, id);
             statement.executeUpdate();
-            statement.close();
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
-        try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        finally
+        {
+            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
     }
 
     private void updatePageStats()
     {
         Connection connection = DbManager.getConnection();
+        String query = "UPDATE Page SET likes=?, talking_about=? WHERE id=?";
+        PreparedStatement statement = null;
         try
         {
-            String query = "UPDATE Page SET likes=?, talking_about=? WHERE id=?";
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
             statement.setInt(1, likes);
             statement.setInt(2, talkingAbout);
             statement.setString(3, id);
             statement.executeUpdate();
-            statement.close();
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
-        try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        finally
+        {
+            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
     }
 
     private void insertPageCrawl()
     {
         Connection connection = DbManager.getConnection();
+        String query = "INSERT INTO PageCrawl (crawl_date,page_id,likes,talking_about) VALUES (?,?,?,?)";
+        PreparedStatement statement = null;
         try
         {
-            String query = "INSERT INTO PageCrawl (crawl_date,page_id,likes,talking_about) VALUES (?,?,?,?)";
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
             statement.setString(1, Util.getDbDateTimeUtc());
             statement.setString(2, id);
             statement.setInt(3, likes);
             statement.setInt(4, talkingAbout);
             statement.executeUpdate();
-            statement.close();
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
-        try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        finally
+        {
+            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
     }
 
     public String getId() {
