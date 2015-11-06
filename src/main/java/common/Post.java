@@ -137,10 +137,6 @@ public class Post
         else
         {
             insertPost();
-            if(++FbCollector.postsCount % 10 == 0)
-            {
-                System.out.println(Util.getDbDateTimeEst() + " Fetched " + FbCollector.postsCount + " posts");
-            }
         }
 
         if(Config.crawlHistory)

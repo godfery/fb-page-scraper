@@ -10,7 +10,9 @@ public class PostsCollector
 {
     private Page page;
 
-    private List<String> postIds;
+    public List<String> postIds;
+
+    public int commentsCount = 0;
 
     public PostsCollector(Page page)
     {
@@ -18,43 +20,12 @@ public class PostsCollector
         postIds = new ArrayList<String>();
     }
 
-    public void collect()
+    public void collectOnce()
     {
-        String tempSince = Config.since;
-        String tempUntil = Config.until;
-
-        if(!Config.collectOnce)
-        {
-            long curTime = System.currentTimeMillis();
-            long configSince = Util.toMillis(Config.since);
-            long configUntil = Util.toMillis(Config.until);
-
-            if(FbCollector.collectStats)
-            {
-                if(configUntil > (curTime - (2 * FbCollector.dayInMillis)))
-                {
-                    long statsSince = curTime - (2 * FbCollector.dayInMillis);
-                    if(statsSince < configSince)
-                    {
-                        statsSince = configSince;
-                    }
-                    tempSince = Util.getDateTimeUtc(statsSince);
-                }
-            }
-            else
-            {
-                if((configUntil - configSince) > FbCollector.hourInMillis)
-                {
-                    tempSince = Util.getDateTimeUtc(FbCollector.tempSince);
-                    tempUntil = Util.getDateTimeUtc(FbCollector.tempSince + FbCollector.hourInMillis);
-                }
-            }
-        }
-
         /**
          * Collect posts from tempSince to tempUntil
          */
-        String url = getCollectUrl(tempSince, tempUntil);
+        String url = getCollectUrl(Config.since, Config.until);
         collect(url);
 
         /**
@@ -62,25 +33,44 @@ public class PostsCollector
          */
         if(Config.collectComments)
         {
-            if(Config.collectOnce)
+            for(String postId: postIds)
             {
+                CommentsCollector commentsCollector = new CommentsCollector(page.getUsername(), postId);
+                commentsCollector.collect();
+            }
+        }
+    }
+
+    public void collect()
+    {
+        if(FbCollector.collectStats)
+        {
+            long configSince = Util.toMillis(Config.since);
+            long statsSince = System.currentTimeMillis() - (2 * FbCollector.dayInMillis);
+            if(FbCollector.untilPointer > statsSince)
+            {
+                statsSince = (configSince < statsSince) ? statsSince : configSince;
+                /* collect posts and stats only */
+                String url = getCollectUrl(Util.getDateTimeUtc(statsSince), Util.getDateTimeUtc(FbCollector.untilPointer));
+                collect(url);
+            }
+        }
+        else
+        {
+            if(FbCollector.untilPointer > FbCollector.sincePointer)
+            {
+                /* collect posts and comments */
+                String tempSince = Util.getDateTimeUtc(FbCollector.sincePointer);
+                String tempUntil = Util.getDateTimeUtc(FbCollector.sincePointer + FbCollector.timeSlice);
+                String url = getCollectUrl(tempSince, tempUntil);
+                collect(url);
                 for(String postId: postIds)
                 {
                     CommentsCollector commentsCollector = new CommentsCollector(page.getUsername(), postId);
-                    commentsCollector.collect();
-                }
-            }
-            else
-            {
-                if(!FbCollector.collectStats)
-                {
-                    for(String postId: postIds)
+                    if(commentsCollector.isFetchRequired())
                     {
-                        CommentsCollector commentsCollector = new CommentsCollector(page.getUsername(), postId);
-                        if(commentsCollector.isFetchRequired())
-                        {
-                            commentsCollector.collect();
-                        }
+                        commentsCollector.collect();
+                        commentsCount += commentsCollector.comments.size();
                     }
                 }
             }

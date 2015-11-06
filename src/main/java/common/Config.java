@@ -25,7 +25,7 @@ public class Config
     public static String dbPass;
     public static boolean collectComments;
     public static boolean crawlHistory;
-    //public static int waitTime;
+    public static int waitTime;
     static
     {
         init();
@@ -59,8 +59,8 @@ public class Config
             dbPass = properties.getProperty("dbPass");
             collectComments = properties.getProperty("collectComments").toLowerCase().equals("true");
             crawlHistory = properties.getProperty("crawlHistory").toLowerCase().equals("true");
-            //String tempWaitTime = properties.getProperty("waitTime");
-            //waitTime = (null != tempWaitTime) && tempWaitTime.matches("\\d+") ? Integer.parseInt(tempWaitTime) : 60;
+            String tempWaitTime = properties.getProperty("waitTime");
+            waitTime = (null != tempWaitTime) && tempWaitTime.matches("\\d+") ? Integer.parseInt(tempWaitTime) : 20 * pages.size();
         }
         catch (IOException e)
         {
@@ -92,6 +92,11 @@ public class Config
         if(null == Config.accessToken || Config.accessToken.isEmpty())
         {
             System.err.println("accessToken missing");
+            return false;
+        }
+        if(pages == null || pages.size() == 0)
+        {
+            System.err.println("pages missing");
             return false;
         }
         if(null == Config.dbUrl || null == Config.dbUser || null == Config.dbPass)
