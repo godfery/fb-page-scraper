@@ -34,6 +34,3 @@ jsonDir=
 # Use this only if it is absolutely required for your research
 # Set this to true if you want to keep statistics of previous crawls
 crawlHistory=false
-# Advanced usage
-# wait time between fetch iterations in seconds
-# waitTime=60

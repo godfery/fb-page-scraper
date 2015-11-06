@@ -17,11 +17,15 @@ public class FbCollector
 
     public static final long dayInMillis = 86400000;
 
+    public static final long hourInMillis = 3600000;
+
     public static int scrapeCount = 0;
 
-    public static int postsCount = 0;
+    public static long postsCount = 0;
 
-    public static int commentsCount = 0;
+    public static long commentsCount = 0;
+
+    public static boolean collectStats;
 
     public static void main(String[] args) throws Exception
     {
@@ -31,43 +35,50 @@ public class FbCollector
 
     public void collect() throws InterruptedException
     {
-        if(isConfigValid())
+        initTempSince();
+
+        if(loopIndex == 0)
         {
-            initTempSince();
+            System.out.println(Util.getDbDateTimeEst() + " Started fetching data");
+        }
 
-            if(loopIndex == 0)
+        collectStats = loopIndex % 2 == 0;
+
+        for(String page: Config.pages)
+        {
+            PageCollector pageCollector = new PageCollector(page);
+            pageCollector.collect();
+        }
+
+        for(String page: Config.pages)
+        {
+            PostsCollector postsCollector = new PostsCollector(new Page(page));
+            postsCollector.collect();
+        }
+
+        /* sleep after collecting stats */
+        if(collectStats)
+        {
+            Util.sleep(300);
+        }
+
+        loopIndex++;
+
+        if(tempSince == Util.toMillis(Config.since))
+        {
+            scrapeCount++;
+            if(scrapeCount == 1)
             {
-                System.out.println("Validated configurations file");
-                System.out.println("Started fetching data");
+                System.out.println(Util.getDbDateTimeEst() + " Completed fetching all historic data from " + Config.since + " until " + Config.until);
+                System.out.println("Continuing to fetch current and future data");
+                Util.sleep(300);
             }
+        }
 
-            for(String page: Config.pages)
-            {
-                PageCollector pageCollector = new PageCollector(page);
-                pageCollector.collect();
-
-                PostsCollector postsCollector = new PostsCollector(new Page(page));
-                postsCollector.collect();
-            }
-
-            loopIndex++;
-
-            if(tempSince == Util.toMillis(Config.since))
-            {
-                scrapeCount++;
-                if(scrapeCount == 1)
-                {
-                    System.out.println("Completed fetching all historic data from " + Config.since + " until " + Config.until);
-                    System.out.println("Continuing to fetch current and future data");
-                }
-            }
-
-            if(!Config.collectOnce)
-            {
-                Util.sleep(Config.waitTime);
-                Config.init();
-                collect();
-            }
+        Config.init();
+        if(!Config.collectOnce)
+        {
+            collect();
         }
     }
 
@@ -81,53 +92,15 @@ public class FbCollector
         long configUntil = Util.toMillis(Config.until);
         if(tempSince == -1 || tempSince == configSince)
         {
-            tempSince = configUntil - dayInMillis;
+            tempSince = configUntil - hourInMillis;
         }
         else
         {
-            tempSince = tempSince - dayInMillis;
+            tempSince = tempSince - hourInMillis;
         }
         if(tempSince < configSince)
         {
             tempSince = configSince;
         }
-    }
-
-    public boolean isConfigValid()
-    {
-        if(null == Config.accessToken || Config.accessToken.isEmpty())
-        {
-            System.err.println("accessToken missing");
-            return false;
-        }
-        if(null == Config.dbUrl || null == Config.dbUser || null == Config.dbPass)
-        {
-            System.err.println("database connection parameters are required");
-        }
-        if(!DbManager.isParamsValid())
-        {
-            System.err.println("invalid database parameters");
-            return false;
-        }
-        if(null == Config.since || Config.since.isEmpty() || !Config.since.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
-        {
-            System.err.println("invalid start date (since)");
-            return false;
-        }
-        if(Config.collectJson)
-        {
-            if(null == Config.jsonDir || Config.jsonDir.isEmpty())
-            {
-                System.err.println("json directory is required if collectJson=true");
-                return false;
-            }
-            File jsonDir = new File(Config.jsonDir);
-            if(!jsonDir.exists() || !jsonDir.isDirectory())
-            {
-                System.err.println("invalid json directory");
-                return false;
-            }
-        }
-        return true;
     }
 }

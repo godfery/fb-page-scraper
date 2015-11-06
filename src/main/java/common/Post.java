@@ -139,8 +139,7 @@ public class Post
             insertPost();
             if(++FbCollector.postsCount % 10 == 0)
             {
-                System.out.println("Fetched " + FbCollector.postsCount + " new posts");
-                FbCollector.postsCount = 0;
+                System.out.println(Util.getDbDateTimeEst() + " Fetched " + FbCollector.postsCount + " posts");
             }
         }
 

@@ -17,6 +17,7 @@ public class CommentsCollector
     private String page;
     private String postId;
     public JSONArray comments = new JSONArray();
+    public static long tempCount = 0;
 
     public CommentsCollector(String page, String postId)
     {
@@ -26,6 +27,12 @@ public class CommentsCollector
 
     public void collect()
     {
+        if(FbCollector.commentsCount - tempCount > 10000)
+        {
+            Util.sleep(300);
+            tempCount = FbCollector.commentsCount;
+        }
+
         String url = Config.baseUrl + "/" + postId + "/comments";
         url += "?access_token=" + Config.accessToken;
         url += "&fields=id,message,created_time,like_count,from";
@@ -146,8 +153,7 @@ public class CommentsCollector
 
                         if(++FbCollector.commentsCount % 1000 == 0)
                         {
-                            System.out.println("Fetched " + FbCollector.commentsCount + " new comments");
-                            FbCollector.commentsCount = 0;
+                            System.out.println(Util.getDbDateTimeEst() + " Fetched " + FbCollector.commentsCount + " comments");
                         }
                     }
                     else

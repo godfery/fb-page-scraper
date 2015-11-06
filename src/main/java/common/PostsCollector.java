@@ -10,18 +10,18 @@ public class PostsCollector
 {
     private Page page;
 
-    private List<String> postIds = new ArrayList<String>();
+    private List<String> postIds;
 
     public PostsCollector(Page page)
     {
         this.page = page;
+        postIds = new ArrayList<String>();
     }
 
     public void collect()
     {
         String tempSince = Config.since;
         String tempUntil = Config.until;
-        boolean collectStats = FbCollector.loopIndex % 2 == 0;
 
         if(!Config.collectOnce)
         {
@@ -29,7 +29,7 @@ public class PostsCollector
             long configSince = Util.toMillis(Config.since);
             long configUntil = Util.toMillis(Config.until);
 
-            if(collectStats)
+            if(FbCollector.collectStats)
             {
                 if(configUntil > (curTime - (2 * FbCollector.dayInMillis)))
                 {
@@ -43,10 +43,10 @@ public class PostsCollector
             }
             else
             {
-                if((configUntil - configSince) > FbCollector.dayInMillis)
+                if((configUntil - configSince) > FbCollector.hourInMillis)
                 {
                     tempSince = Util.getDateTimeUtc(FbCollector.tempSince);
-                    tempUntil = Util.getDateTimeUtc(FbCollector.tempSince + FbCollector.dayInMillis);
+                    tempUntil = Util.getDateTimeUtc(FbCollector.tempSince + FbCollector.hourInMillis);
                 }
             }
         }
@@ -68,12 +68,11 @@ public class PostsCollector
                 {
                     CommentsCollector commentsCollector = new CommentsCollector(page.getUsername(), postId);
                     commentsCollector.collect();
-                    Util.sleep(5);
                 }
             }
             else
             {
-                if(!collectStats)
+                if(!FbCollector.collectStats)
                 {
                     for(String postId: postIds)
                     {
