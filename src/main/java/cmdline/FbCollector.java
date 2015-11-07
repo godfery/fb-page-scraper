@@ -19,7 +19,7 @@ public class FbCollector
 
     public static final long hourInMillis = 3600000;
 
-    public static final long timeSlice = (hourInMillis * 24)/Config.pages.size();
+    public static final long timeSlice = hourInMillis * (24/(Config.pages.size() > 24 ? 24 : Config.pages.size()));
 
     public static int scrapeCount = 0;
 
@@ -29,7 +29,7 @@ public class FbCollector
     {
         FbCollector collector = new FbCollector();
 
-        System.out.println(Util.getDbDateTimeEst() + " Started fetching data");
+        System.out.println(Util.getDbDateTimeEst() + " started fetching data");
 
         if(Config.collectOnce)
         {
@@ -88,7 +88,7 @@ public class FbCollector
 
             tempPostsCount += postsCollector.postIds.size();
         }
-        System.out.println(Util.getDbDateTimeEst() + " updated " + tempPostsCount + " posts");
+        System.out.println(Util.getDbDateTimeEst() + " fetched " + tempPostsCount + " posts");
 
         Util.sleep(Config.waitTime);
 
@@ -105,7 +105,7 @@ public class FbCollector
 
         String tempSince = Util.getDateTimeUtc(FbCollector.sincePointer);
         String tempUntil = Util.getDateTimeUtc(FbCollector.sincePointer + FbCollector.timeSlice);
-        System.out.println(Util.getDbDateTimeEst() + " historic data from " + tempSince + " to " + tempUntil);
+        System.out.println(Util.getDbDateTimeEst() + " fetching historic data from " + tempSince + " to " + tempUntil);
 
         for(String page: Config.pages)
         {
@@ -123,9 +123,9 @@ public class FbCollector
             tempPostsCount += postsCollector.postIds.size();
             tempCommentsCount += postsCollector.commentsCount;
         }
-        System.out.println(Util.getDbDateTimeEst() + " updated " + tempPostsCount + " posts, " + tempCommentsCount + " comments");
+        System.out.println(Util.getDbDateTimeEst() + " fetched " + tempPostsCount + " posts, " + tempCommentsCount + " comments");
 
-        if(tempCommentsCount > 10000)
+        if(tempCommentsCount > 5000)
         {
             Util.sleep(Config.waitTime);
         }
